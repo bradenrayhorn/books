@@ -1,0 +1,22 @@
+{{/* 
+  Input: a book page (.)
+  Resolves series and world pages from params, returns an augmented dict.
+  Usage: {{ partial "resolve-series" . }}
+*/}}
+
+{{ $series := "" }}
+{{ $world := "" }}
+
+{{ with .Params.world }}
+  {{ $world = site.GetPage (printf "/worlds/%s" .) }}
+{{ end }}
+
+{{ with .Params.series }}
+  {{ $series = site.GetPage (printf "/series/%s" .) }}
+  {{ if and (not $series) $world }}
+    {{ $series = site.GetPage (printf "/series/%s/%s" $.Params.world .) }}
+  {{ end }}
+{{ end }}
+
+{{ return dict "series" $series "world" $world "book" . }}
+

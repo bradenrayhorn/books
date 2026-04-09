@@ -1,0 +1,55 @@
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+
+{{.Content}}
+
+{{ $pages := sort .Pages "Params.date_read" "desc" }}
+{{ $years := slice }}
+{{ range $pages }}
+  {{ $year := (time.AsTime .Params.date_read).Format "2006" }}
+  {{ $years = $years | append $year }}
+{{ end }}
+{{ $years = uniq $years }}
+
+{{ range $years }}
+{{ $year := . }}
+
+<ul class="recent-books">
+  {{ range $pages }} 
+    {{ if eq $year ((time.AsTime .Params.date_read).Format "2006") }}
+      {{ $series := partial "resolve-series" . }}
+
+      <li class="book-card">
+          <div class="rating-container">{{ partial "rating" .Params }}</div>
+
+          <div>
+              <div class="primary">
+                <a href="{{ .RelPermalink }}"><strong>{{ .Title }}</strong></a>
+                <span class="series">
+                  {{ with $series.series }}
+                    (<a class="subtext" href="{{ .RelPermalink }}">{{ .Title }}</a>)
+                  {{ end }}
+                  {{ with $series.world }}
+                    [<a class="subtext" href="{{ .RelPermalink }}">{{ .Title }}</a>]
+                  {{ end }}
+                </span>
+              </div>
+
+              <div class="subtext">
+                by {{ .Params.author }} {{ if .Content }} | <a class="subtext" href="{{ .RelPermalink }}">comments</a>{{ end }}
+              </div>
+          </div>
+
+          <div class="subtext date">{{ (time.AsTime .Params.date_read).Format "Jan 2006" }}</div>
+      </li>
+    {{ end }}
+  {{ end }}
+</ul>
+
+<div class="year-divider">
+  <hr/>
+</div>
+{{ end }}
+
+
+{{ end }}

@@ -1,0 +1,9 @@
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+
+<ul class="world-series-list">
+  {{ range sort .Pages "Params.year" "asc" }}
+    {{ partial "series-item" . }}
+  {{ end }}
+</ul>
+{{ end }}

@@ -1,0 +1,33 @@
+{{ define "main" }}
+{{ $resolved := partial "resolve-series" . }}
+
+<div class="series-header">
+{{ partial "rating" .Params }}
+<div>
+  <h1>{{ .Title }}</h1>
+  {{ with $resolved.world }}
+    <a class="subtext" href="{{ .RelPermalink }}">of [{{ .Title }}]</a>
+  {{ end }}
+</div>
+</div>
+
+<span class="subtext">by {{ $.Params.author }} | {{ $.Params.year }}</span>
+
+{{ $books := where site.RegularPages "Section" "books" }}
+{{ $books = where $books "Params.series" .File.ContentBaseName }}
+
+<div class="series-novels">
+  <h2>Novels</h2>
+  <ul class="world-series-list">
+    {{ range ($books.ByParam "year").ByParam "idx" }}
+      {{ partial "series-book-item" . }}
+    {{ end }}
+  </ul>
+</div>
+
+
+<h2>Review</h2>
+{{ .Content }}
+
+
+{{ end }}

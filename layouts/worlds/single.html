@@ -1,0 +1,45 @@
+{{ define "main" }}
+
+<div>
+  <h1>{{ .Title }}</h1>
+</div>
+
+<span class="subtext">by {{ $.Params.author }}</span>
+
+{{ .Content }}
+
+{{ $series := where site.RegularPages "Section" "series" }}
+{{ $series = where $series "Params.world" .File.ContentBaseName }}
+
+{{ $books := where site.RegularPages "Section" "books" }}
+{{ $books = where $books "Params.world" .File.ContentBaseName }}
+{{ $books = where $books "Params.series" nil }}
+
+<div class="series-novels">
+  <h2>Novels</h2>
+  <ul class="world-series-list">
+    {{ range ($series.ByParam "year").ByParam "idx" }}
+
+      <li class="series">
+        {{ partial "rating" .Params }}
+        <div>
+          <a href="{{ .RelPermalink }}"><strong>{{ .Title }}</strong></a>
+        </div>
+
+        <ul>
+          {{ $seriesBooks := where site.RegularPages "Section" "books" }}
+          {{ $seriesBooks = where $seriesBooks "Params.series" .File.ContentBaseName }}
+          {{ range ($seriesBooks.ByParam "year").ByParam "idx" }}
+            {{ partial "series-book-item" . }}
+          {{ end }}
+        </ul>
+      </li>
+    {{ end }}
+
+    {{ range ($books.ByParam "year").ByParam "idx" }}
+      {{ partial "series-book-item" . }}
+    {{ end }}
+  </ul>
+</div>
+
+{{ end }}

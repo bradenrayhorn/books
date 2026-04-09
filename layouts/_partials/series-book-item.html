@@ -1,0 +1,6 @@
+<li class="series">
+  {{ partial "rating" .Params }}
+  <a href="{{ .RelPermalink }}"><strong>{{ .Title }}</strong></a>
+  <div></div>
+  <div class="subtext">by {{ .Params.author }} | {{ .Params.year }}</div>
+</li>

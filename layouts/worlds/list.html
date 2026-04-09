@@ -1,0 +1,15 @@
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+
+<ul class="world-series-list">
+  {{ range sort .Pages "Params.Title" "asc" }}
+  <li>
+    <div>
+      <a href="{{ .RelPermalink }}"><strong>{{ .Title }}</strong></a>
+    </div>
+
+    <span class="subtext">by {{ .Params.author }}</span>
+  </li>
+  {{ end }}
+</ul>
+{{ end }}

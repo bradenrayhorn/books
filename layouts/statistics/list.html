@@ -1,0 +1,106 @@
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+
+{{ $books := where site.RegularPages "Section" "books" }}
+
+{{/* Build per-year aggregates */}}
+{{ $years := dict }}
+{{ range $books }}
+  {{ $dateRead := time.AsTime .Params.date_read }}
+  {{ $year := $dateRead.Format "2006" }}
+  {{ $existing := index $years $year | default (dict "words" 0 "count" 0) }}
+  {{ $years = merge $years (dict $year (dict
+    "words" (add ($existing.words) (.Params.words | default 0))
+    "count" (add ($existing.count) 1)
+  )) }}
+{{ end }}
+
+{{/* Sort year keys */}}
+{{ $sortedYears := slice }}
+{{ range $year, $_ := $years }}
+  {{ $sortedYears = $sortedYears | append $year }}
+{{ end }}
+{{ $sortedYears = sort $sortedYears }}
+
+{{/* Serialize to JSON for chart.js */}}
+{{ $labels := slice }}
+{{ $wordCounts := slice }}
+{{ $bookCounts := slice }}
+{{ range $sortedYears }}
+  {{ $labels = $labels | append . }}
+  {{ $data := index $years . }}
+  {{ $wordCounts = $wordCounts | append $data.words }}
+  {{ $bookCounts = $bookCounts | append $data.count }}
+{{ end }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<h2>Year Summary</h2>
+<table class="year-summary">
+  <thead>
+    <tr>
+      <th>Year</th>
+      <th>Word Count</th>
+      <th>Books</th>
+      <th>Words / Book</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range $sortedYears }}
+      {{ $data := index $years . }}
+      {{ $wordsPerBook := 0 }}
+      {{ if gt $data.count 0 }}
+        {{ $wordsPerBook = div $data.words $data.count }}
+      {{ end }}
+      <tr>
+        <td>{{ . }}</td>
+        <td>{{ $data.words | lang.FormatNumber 0 }}</td>
+        <td>{{ $data.count | lang.FormatNumber 0 }}</td>
+        <td>{{ $wordsPerBook | lang.FormatNumber 0 }}</td>
+      </tr>
+    {{ end }}
+  </tbody>
+</table>
+
+<canvas id="wordCountChart"></canvas>
+<canvas id="bookCountChart"></canvas>
+
+<script>
+  const labels = {{ $labels | jsonify | safeJS }};
+  const wordCounts = {{ $wordCounts | jsonify | safeJS }};
+  const bookCounts = {{ $bookCounts | jsonify | safeJS }};
+
+  new Chart(document.getElementById('wordCountChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Words Read',
+        data: wordCounts,
+        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+      }]
+    },
+    options: {
+      plugins: { title: { display: true, text: 'Word Count per Year' } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  new Chart(document.getElementById('bookCountChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Books Read',
+        data: bookCounts,
+        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+      }]
+    },
+    options: {
+      plugins: { title: { display: true, text: 'Books Read per Year' } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+</script>
+
+{{ end }}

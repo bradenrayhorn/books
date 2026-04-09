@@ -1,0 +1,16 @@
+{{ $series := . }}
+
+{{ $resolved := partial "resolve-series" . }}
+
+<li class="series">
+  {{ partial "rating" $series.Params }}
+  <div>
+    <a href="{{ $series.RelPermalink }}"><strong>{{ $series.Title }}</strong></a>
+    {{ with $resolved.world }}
+      <a class="subtext" href="{{ .RelPermalink }}">[{{ .Title }}]</a>
+    {{ end }}
+  </div>
+  <div></div>
+
+  <span class="subtext">by {{ $series.Params.author }} | {{ $series.Params.year }} | {{ $series.Params.count }} novels</span>
+</li>

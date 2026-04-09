@@ -1,0 +1,5 @@
+baseURL = 'https://books.hydrated.dev'
+locale = 'en-us'
+title = 'Books!'
+theme = 'bookend'
+disableKinds = ['taxonomy', 'rss']

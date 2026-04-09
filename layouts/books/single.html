@@ -1,0 +1,29 @@
+{{ define "main" }}
+{{ $resolved := partial "resolve-series" . }}
+
+<div class="series-header">
+{{ partial "rating" .Params }}
+<div>
+  <h1>{{ .Title }}</h1>
+  {{ with $resolved.series }}
+    <a class="subtext" href="{{ .RelPermalink }}">[{{ .Title }}]</a>
+  {{ end }}
+  {{ with $resolved.world }}
+    <a class="subtext" href="{{ .RelPermalink }}">[{{ .Title }}]</a>
+  {{ end }}
+</div>
+</div>
+
+<span class="subtext">by {{ $.Params.author }} | {{ $.Params.year }}</span>
+
+<div class="single-spacer"></div>
+
+{{ $plain := .Content | plainify | strings.TrimSpace }}
+{{ if $plain }}
+  <h2>Review</h2>
+  {{ .Content }}
+{{ else }}
+  <i>No review written</i>
+{{ end }}
+
+{{ end }}

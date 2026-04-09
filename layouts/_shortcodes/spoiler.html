@@ -1,0 +1,11 @@
+<details class="spoiler">
+  {{ with .Get "reason" }}
+  <summary>⚠️ Spoiler: {{ . }}</summary>
+  {{ else }}
+  <summary>⚠️ Spoiler</summary>
+  {{ end }}
+  <div class="spoiler-content">
+    {{ .Inner | markdownify }}
+  </div>
+</details>
+

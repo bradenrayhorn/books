@@ -1,0 +1,9 @@
+{{ $rating := .rating }}
+{{ $status := .status }}
+
+{{ if eq $rating 1 }}<span class="rating d">C</span>
+{{ else if eq $rating 2 }}<span class="rating c">B</span>
+{{ else if eq $rating 3 }}<span class="rating b">A</span>
+{{ else if eq $rating 4 }}<span class="rating a">AA</span>
+{{ else }}<span class="rating nf">-</span>
+{{ end }}
